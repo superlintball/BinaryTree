@@ -1,3 +1,7 @@
+/* Author: Raveen Karnik
+ * Date: 3-7-18
+ * This program creates a binary tree and allows users to remove numbers from it */
+
 #include <iostream>
 #include <cstring>
 #include <stdlib.h>
@@ -5,6 +9,7 @@
 
 using namespace std;
 
+//creates a node object with a number, a left node, and a right node
 struct Node
 {
 	int num;
@@ -17,7 +22,7 @@ struct Node
 };
 
 //thanks to myself for writing the visualize code in shunting yard
-//print out the tree in a simple form
+//print out the tree in a sideways form
 void visualize(Node* head, int depth=0)
 {
 	if(head->right)
@@ -34,21 +39,27 @@ void visualize(Node* head, int depth=0)
 		visualize(head->left, depth+1);
 }
 
+//adds an integer to the binary tree recursively
 void add(Node* head, int toAdd)
 {
+	//if the integer being added is greater than the current node go right
 	if(toAdd > head->num)
 	{
+		//if there is already a node to the right, go right
 		if(head->right)
 		{
 			add(head->right, toAdd);
 		}
+		//if there is not a node to the right, create a new one containing the integer
 		else
 		{
 			head->right = new Node(toAdd);
 		}
 	}
+	//otherwise go left
 	else
 	{
+		//if the left node exists, go there, otherwise make a new left
 		if(head->left)
 		{
 			add(head->left, toAdd);
@@ -60,29 +71,35 @@ void add(Node* head, int toAdd)
 	}
 }
 
+//recursively finds a number in the tree, and returns the node above it
 Node* find(Node* head, int toRemove, Node* prev = NULL)
 {
+	//if the number being looked for is greater than the current, go right
 	if(toRemove > head->num)
 	{
 		if(head->right)
 		{
 			return find(head->right, toRemove, head);
 		}
+		//if there is no node to the right, return NULL indicating the number is not in the tree
 		else
 		{
 			return NULL;
 		}
 	}
+	//when the number is found, return the node above it
 	else if(toRemove == head->num)
 	{
 		return prev;
 	}
+	//if the number being looked for is less than the current, go left
 	else if(toRemove < head->num)
 	{
 		if(head->left)
 		{
 			return find(head->left, toRemove, head);
 		}
+		//if there is no node to the left, return NULL indicating the number is not in the tree
 		else 
 		{
 			return NULL;
@@ -90,15 +107,20 @@ Node* find(Node* head, int toRemove, Node* prev = NULL)
 	}
 }
 
+//removes a number from the tree
 void remove(Node* head, int toRemove)
 {
+	//the find function returns NULL if the number being removed is in the head, as there is no node above it
+	//thus, first check if the head contains the number
 	if(toRemove == head->num)
 	{
+		//if there is no left or right, the tree is empty
 		if(!head->left && !head->right)
 		{
 			head->num = 0;
 			cout << "The tree is now empty.\n";
 		}
+		//if there is a right but not a left, move the right node up to the head position
 		else if(!head->left && head->right)
 		{
 			Node* temp = head->right;
@@ -107,6 +129,7 @@ void remove(Node* head, int toRemove)
 			head->left = temp->left;
 			delete temp;
 		}
+		//if there is a left but not a right, move the left node up to the head position
 		else if(head->left && !head->right)
 		{
 			Node* temp = head->left;
@@ -115,8 +138,10 @@ void remove(Node* head, int toRemove)
 			head->left = temp->left;
 			delete temp;
 		}
+		//if both exist
 		else
 		{
+			//find the next smallest number
 			Node* replace = head->left;
 			Node* upReplace = head;
 			while(replace->right)
@@ -125,24 +150,26 @@ void remove(Node* head, int toRemove)
 				replace = replace->right;
 			}
 			
+			//remove the next smallest number from the tree
 			if(upReplace == head)
-			{
 				upReplace->left = replace->left;
-			}
 			else
-			{
 				upReplace->right = replace->left;
-			}
+			
+			//replace the head with its next smallest number
 			head->num = replace->num;
 			delete replace;
 		}
-		
+		//exit the remove function
 		return;
 	}
 	
+	//now, the find function is run
 	Node* above = find(head, toRemove);
+	//if the number was found
 	if(above)
 	{
+		//store the node being removed and what side of "above" it is on
 		Node* temp = NULL;
 		
 		//left will be true and right will be false
@@ -157,44 +184,43 @@ void remove(Node* head, int toRemove)
 			temp = above->left;
 		}
 		
+		//if there is no left or right, make the above node point to NULL where the node was
 		if(!temp->right && !temp->left)
 		{
 			if(side)
-			{
 				above->left = NULL;
-			}
 			else
-			{
 				above->right = NULL;
-			}
+			
+			//delete the node
 			delete temp;
 		}
+		//if the node has a left but not a right, move the left-side branch up to the node's spot
 		else if(!temp->right && temp->left)
 		{
 			if(side)
-			{
 				above->left = temp->left;
-			}
 			else
-			{
 				above->right = temp->left;
-			}
+			
+			//delete the node
 			delete temp;
 		}
+		//if the node has a right but not a left, move the right-side branch up to the node's spot
 		else if(temp->right && !temp->left)
 		{
 			if(side)
-			{
 				above->left = temp->right;
-			}
 			else
-			{
 				above->right = temp->right;
-			}
+			
+			//delete the node
 			delete temp;
 		}
+		//if the node has both a right and a left
 		else
 		{
+			//find the next smallest number
 			Node* replace = temp->left;
 			Node* upReplace = temp;
 			while(replace->right)
@@ -203,18 +229,18 @@ void remove(Node* head, int toRemove)
 				replace = replace->right;
 			}
 			
+			//remove the next smallest number from its position in the tree
 			if(upReplace == temp)
-			{
 				upReplace->left = replace->left;
-			}
 			else
-			{
 				upReplace->right = replace->left;
-			}
+			
+			//replace the node with the next smallest number
 			temp->num = replace->num;
 			delete replace;
 		}
 	}
+	//if the number wasn't found, complain
 	else
 	{
 		cout << "That number is not in the tree.\n";
@@ -308,29 +334,38 @@ int main()
 		fileFound = false;
 	}
 	
+	//if the tree exists
 	if(fileFound)
 	{
+		//print it out
 		visualize(tree);
+		
+		//ask the user if they want to delete numbers and keep asking until they say no
 		bool deleting = true;
 		while(deleting)
 		{
 			cout << "Would you like to remove a number from the tree? (y/n)\n";
 			cin >> input;
+			//if the user wants to delete, delete
 			if(!strcmp(input, "y") || !strcmp(input, "Y")
 				|| !strcmp(input, "Yes") || !strcmp(input, "yes") || !strcmp(input, "YES"))
 			{
+				//prompt the user for the number to be deleted
 				cout << "What number would you like to remove?\n";
 				int toRemove = -1;
 				cin >> toRemove;
 				cout << endl;
 				
+				//remove the number from the tree
 				remove(tree, toRemove);
-					
+				
+				//if the tree is empty, end
 				if(!tree || tree->num == 0)
 					deleting = false;
 				else
 					visualize(tree);
 			}
+			//if the user is done deleting, end
 			else if(!strcmp(input, "n") || !strcmp(input, "N")
 				|| !strcmp(input, "No") || !strcmp(input, "no") || !strcmp(input, "NO"))
 			{
