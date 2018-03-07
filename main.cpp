@@ -96,7 +96,7 @@ void remove(Node* head, int toRemove)
 	{
 		if(!head->left && !head->right)
 		{
-			delete head;
+			head->num = 0;
 			cout << "The tree is now empty.\n";
 		}
 		else if(!head->left && head->right)
@@ -109,7 +109,7 @@ void remove(Node* head, int toRemove)
 		}
 		else if(head->left && !head->right)
 		{
-			Node* temp = head->right;
+			Node* temp = head->left;
 			head->num = temp->num;
 			head->right = temp->right;
 			head->left = temp->left;
@@ -125,7 +125,14 @@ void remove(Node* head, int toRemove)
 				replace = replace->right;
 			}
 			
-			upReplace->right = replace->left;
+			if(upReplace == head)
+			{
+				upReplace->left = replace->left;
+			}
+			else
+			{
+				upReplace->right = replace->left;
+			}
 			head->num = replace->num;
 			delete replace;
 		}
@@ -196,11 +203,8 @@ void remove(Node* head, int toRemove)
 				replace = replace->right;
 			}
 			
-			cout << "upreplace: " << upReplace->num << "\nreplace: " << replace->num << endl;
-			
 			if(upReplace == temp)
 			{
-				cout << "hello I am here\n";
 				upReplace->left = replace->left;
 			}
 			else
@@ -318,13 +322,14 @@ int main()
 				cout << "What number would you like to remove?\n";
 				int toRemove = -1;
 				cin >> toRemove;
+				cout << endl;
 				
 				remove(tree, toRemove);
-				
-				if(!tree)
+					
+				if(!tree || tree->num == 0)
 					deleting = false;
-				
-				visualize(tree);
+				else
+					visualize(tree);
 			}
 			else if(!strcmp(input, "n") || !strcmp(input, "N")
 				|| !strcmp(input, "No") || !strcmp(input, "no") || !strcmp(input, "NO"))
