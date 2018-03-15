@@ -269,9 +269,9 @@ int main()
 			if(!strcmp(input, "MANUAL") || !strcmp(input, "manual"))
 			{
 				//add numbers one by one until the user says they are done
-				cout << "Enter integers from 1-1000 one at a time. Enter DONE when you are done adding numbers \n";
+				cout << "Enter integers from 1-1000 one at a time.\nEnter DONE when you are done adding numbers \n";
 				cin >> input;
-				if(isdigit(input[0]))
+				if(isdigit(input[0]) && !tree)
 				{
 					tree = new Node(atoi(input));
 					cin >> input;
@@ -349,11 +349,11 @@ int main()
 				//print it out
 				visualize(tree);
 
-				//ask the user if they want to delete numbers and keep asking until they say no
-				cout << "Enter numbers to remove one at a time.\nEnter DONE when you are done removing numbers.\n";
 				//if the user wants to delete, delete
 				while(strcmp(input, "DONE") && strcmp(input, "done"))
 				{
+					//ask the user for the numbers to delete
+					cout << "Enter numbers to remove one at a time.\nEnter DONE when you are done removing numbers.\n";
 					cin >> input;
 					int toRemove = atoi(input);
 					cout << endl;
@@ -363,11 +363,15 @@ int main()
 
 					//if the tree is empty, end
 					if(!tree || tree->num == 0)
-						deleting = false;
+						break;
 					else
 						visualize(tree);
 				}
 			}
+		}
+		else if(!strcmp(input, "QUIT") || !strcmp(input, "quit"))
+		{
+			running = false;
 		}
     }
     return 0;
