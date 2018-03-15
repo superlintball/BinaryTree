@@ -360,10 +360,13 @@ int main()
 
 					//remove the number from the tree
 					remove(tree, toRemove);
-
+					
 					//if the tree is empty, end
 					if(!tree || tree->num == 0)
+					{
+						tree = NULL;
 						break;
+					}
 					else
 						visualize(tree);
 				}
